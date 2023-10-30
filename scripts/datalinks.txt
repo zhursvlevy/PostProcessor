@@ -1,0 +1,10 @@
+https://huggingface.co/api/datasets/IlyaGusev/pikabu/parquet/default/train/0.parquet
+https://huggingface.co/api/datasets/IlyaGusev/pikabu/parquet/default/train/1.parquet
+https://huggingface.co/api/datasets/IlyaGusev/pikabu/parquet/default/train/2.parquet
+https://huggingface.co/api/datasets/IlyaGusev/pikabu/parquet/default/train/3.parquet
+https://huggingface.co/api/datasets/IlyaGusev/pikabu/parquet/default/train/4.parquet
+https://huggingface.co/api/datasets/IlyaGusev/pikabu/parquet/default/train/5.parquet
+https://huggingface.co/api/datasets/IlyaGusev/pikabu/parquet/default/train/6.parquet
+https://huggingface.co/api/datasets/IlyaGusev/pikabu/parquet/default/train/7.parquet
+https://huggingface.co/api/datasets/IlyaGusev/pikabu/parquet/default/train/8.parquet
+https://huggingface.co/api/datasets/IlyaGusev/pikabu/parquet/default/train/9.parquet
