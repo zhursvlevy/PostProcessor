@@ -1,0 +1,12 @@
+# base
+numpy
+matplotlib
+pandas
+
+# text processing
+nltk==3.8.1
+
+# utils
+pyarrow==14.0.1
+pyrootutils==1.0.4
+rootutils==1.0.7
