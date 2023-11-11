@@ -14,7 +14,7 @@ def merge_dataset(roots: list) -> pd.core.frame.DataFrame:
             data = pd.read_parquet(root)
     return data
 
-def get_tags(tags: pd.core.series.Series) -> list:
+def getwordlist(tags: pd.core.series.Series) -> list:
     """ 
     Returns list of all words, included in the transmitted pandas.Series.
     Data repetitions and order are preserved.
@@ -24,7 +24,7 @@ def get_tags(tags: pd.core.series.Series) -> list:
     [tags_list.extend(tag) for tag in tags.tolist()]
     return tags_list
 
-def tags_counter(tags_list: list, at_least=1, sort=True, reverse=True) -> dict:
+def getworddict(tags_list: list, at_least=1, sort=True, reverse=True) -> dict:
     """ 
     Returns dict of counted words in the transmitted list. 
     No duplicate data, order controls with parameters "sort" and "reverse".
