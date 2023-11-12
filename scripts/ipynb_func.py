@@ -44,20 +44,36 @@ def getworddict(tags_list: list, at_least=1, sort=True, reverse=True) -> dict:
     return dct
 
 
-def removePostByTags(data, badtags: list):
+def removePostsByTags(data, badtags: list):
     tag_mask = np.sum([[btag in tag for btag in badtags] for tag in data.tags], axis=1).tolist()
     tag_mask = list(map(bool, tag_mask))
     tag_mask = [not elem for elem in tag_mask]
     return data[tag_mask]
 
 
-def removeTags(data, tagstoremove: list):
-    tags_array = [tag_line for tag_line in data.tags]
-    for i in range(len(tags_array)-1):
-        for tag in tagstoremove:
-            tags_array[i] = tags_array[i].replace(';'+tag, '')
-    return tags_array
+def removeTags(formated_tags, permitted_tags: list, prohibitted_tags: list):
+    for i in range(len(formated_tags)):
+        for tag_num in range(len(formated_tags[i])):
+            if formated_tags[i][tag_num] not in permitted_tags or formated_tags[i][tag_num] in prohibitted_tags:
+                formated_tags[i][tag_num] = ''
 
+    for i in range(len(formated_tags)):
+        new = []
+        for j in range(len(formated_tags[i])):
+            if formated_tags[i][j] != '':
+                new.append(formated_tags[i][j])
+        formated_tags[i] = new 
+    
+    return formated_tags
+
+def removeEmptyPosts(tags):
+    mask = []
+    for i in range(len(tags)):
+        if len(tags[i]) == 0:
+            mask.append(False)
+        else:
+            mask.append(True)
+    return mask
 
 def formateTags(data):
     tags = [tag_line for tag_line in data.tags]
