@@ -1,9 +1,6 @@
 # folders
 data/*
 !data/.gitkeep
-models/lda_model_for_48_topics.model.expElogbeta.npy
-models/lda_model_for_48_topics.model.id2word
-models/lda_model_for_48_topics.model.state
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
