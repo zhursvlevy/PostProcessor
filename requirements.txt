@@ -3,6 +3,11 @@ numpy
 matplotlib
 pandas
 
+#frameworks
+torch
+lightning
+transformers
+
 # text processing
 nltk==3.8.1
 
