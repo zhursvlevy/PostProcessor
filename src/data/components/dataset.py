@@ -1,13 +1,23 @@
 import torch
 from torch.utils.data import Dataset
+from transformers import AutoTokenizer
+import pandas as pd
+from src.utils.utils import wilson_score
 
 
-class FiveDataset(Dataset):
+class RateDataset(Dataset):
 
-    def __init__(self, dataframe, tokenizer, max_seq_len):
-        self.data = dataframe
+    def __init__(self,
+                 data_dir: str,
+                 tokenizer: AutoTokenizer,
+                 max_seq_len: int):
+        dataframe = pd.read_parquet(data_dir).iloc[:32]
         self.text = dataframe['text_markdown'].tolist()
-        self.targets = dataframe['wilson_rate'].tolist()
+        if "wilson_rate" in dataframe.columns:
+            self.targets = dataframe['wilson_rate'].tolist()
+        else:
+            self.targets = wilson_score(dataframe["pluses"].to_numpy(), 
+                                        dataframe["minuses"].to_numpy()).tolist()
         self.tokenizer = tokenizer
         self.max_seq_len = max_seq_len
 
@@ -30,7 +40,7 @@ class FiveDataset(Dataset):
         return {
             'ids': torch.tensor(ids, dtype=torch.long),
             'mask': torch.tensor(mask, dtype=torch.long),
-            'targets': torch.tensor(self.targets[index], dtype=torch.float32)
+            'targets': torch.tensor(self.targets[index], dtype=torch.float32).view(-1)
         }
 
 

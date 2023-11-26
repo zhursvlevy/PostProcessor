@@ -6,7 +6,7 @@ from torchmetrics import MeanMetric
 from torchmetrics.regression import R2Score
 
 
-class RatingModule(LightningModule):
+class RateModule(LightningModule):
 
     def __init__(
         self,
@@ -36,13 +36,13 @@ class RatingModule(LightningModule):
         self.val_r2 = R2Score()
         self.test_r2 = R2Score()
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, ids: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
         """Perform a forward pass through the model `self.net`.
 
         :param x: A tensor of images.
         :return: A tensor of logits.
         """
-        return self.net(x)
+        return self.net(ids, mask)
 
     def on_train_start(self) -> None:
         """Lightning hook that is called when training begins."""
@@ -62,10 +62,10 @@ class RatingModule(LightningModule):
             - A tensor of predictions.
             - A tensor of target labels.
         """
-        x, y = batch
-        logits = self.forward(x)
-        loss = self.criterion(logits, y)
-        return loss, logits, y
+        ids, mask, targets = batch["ids"], batch["mask"], batch["targets"]
+        logits = self.forward(ids, mask)
+        loss = self.criterion(logits, targets)
+        return loss, logits, targets
 
     def training_step(
         self, batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int
@@ -127,8 +127,8 @@ class RatingModule(LightningModule):
 
     def on_test_epoch_end(self) -> None:
         """Lightning hook that is called when a test epoch ends."""
-        self.log("test/loss", self.test_loss.compute(), on_step=False, on_epoch=True, prog_bar=True)
-        self.log("test/acc", self.test_r2.compute(), on_step=False, on_epoch=True, prog_bar=True)
+        self.log("test/mse_loss", self.test_loss.compute(), on_step=False, on_epoch=True, prog_bar=True)
+        self.log("test/r2", self.test_r2.compute(), on_step=False, on_epoch=True, prog_bar=True)
 
     def setup(self, stage: str) -> None:
         """Lightning hook that is called at the beginning of fit (train + validate), validate,
@@ -158,7 +158,7 @@ class RatingModule(LightningModule):
                 "optimizer": optimizer,
                 "lr_scheduler": {
                     "scheduler": scheduler,
-                    "monitor": "val/loss",
+                    "monitor": "val/mse_loss",
                     "interval": "epoch",
                     "frequency": 1,
                 },

@@ -7,29 +7,30 @@ from transformers import AutoModel
 class Regressor(torch.nn.Module):
 
     def __init__(self, input_dim: int, hidden_dim: int, p: float = 0.2):
+        super().__init__()
         self.regressor = torch.nn.Sequential(
-            [
                 torch.nn.Linear(input_dim, hidden_dim),
                 torch.nn.Dropout(p),
-                torch.ReLU(),
+                torch.nn.ReLU(),
                 torch.nn.Linear(hidden_dim, 1),
-            ]
-        )
+            )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.regressor(x)
 
 class RegressionTransformer(torch.nn.Module):
 
-    def __init__(self, model_path: str, config: Dict):
+    def __init__(self, 
+                 model_path: str,
+                 input_dim: int,
+                 hidden_dim: int,
+                 dropout_rate: int):
         super().__init__()
         self.model_name = model_path
-        self.config = config
-        self.dropout_rate = config['dropout_rate']
         self.encoder = AutoModel.from_pretrained(self.model_name)
-        self.regressor = Regressor(config["input_dim"], 
-                                   config["hidden_dim"], 
-                                   config["p"])
+        self.regressor = Regressor(input_dim, 
+                                   hidden_dim, 
+                                   dropout_rate)
 
     def forward(self, input_ids, attention_mask,):
         output = self.encoder(

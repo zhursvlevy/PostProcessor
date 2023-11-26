@@ -6,6 +6,8 @@ from omegaconf import DictConfig
 
 from src.utils import pylogger, rich_utils
 
+import numpy as np
+
 log = pylogger.RankedLogger(__name__, rank_zero_only=True)
 
 
@@ -117,3 +119,12 @@ def get_metric_value(metric_dict: Dict[str, Any], metric_name: Optional[str]) ->
     log.info(f"Retrieved metric value! <{metric_name}={metric_value}>")
 
     return metric_value
+
+def wilson_score(pluses: np.ndarray, minuses: np.ndarray, eps: float = 1e-7) -> np.ndarray:
+    n = pluses + minuses
+    p = pluses / (n + eps)
+    return np.where(n > 0, _wilson_score(p, n), 0)
+
+def _wilson_score(p: int, n: int) -> float:
+    q = 1.96
+    return (p + q**2 / (2*n) ) / (1 + q**2/n)
