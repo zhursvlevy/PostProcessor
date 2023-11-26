@@ -11,7 +11,7 @@ class RateDataset(Dataset):
                  data_dir: str,
                  tokenizer: AutoTokenizer,
                  max_seq_len: int):
-        dataframe = pd.read_parquet(data_dir).iloc[:32]
+        dataframe = pd.read_parquet(data_dir)
         self.text = dataframe['text_markdown'].tolist()
         if "wilson_rate" in dataframe.columns:
             self.targets = dataframe['wilson_rate'].tolist()
