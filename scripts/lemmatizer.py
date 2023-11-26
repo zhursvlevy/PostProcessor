@@ -1,7 +1,7 @@
 import rootutils
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
-from src.data.preprocessing import Processor
+from data.components.preprocessing import Processor
 from tqdm import tqdm
 import pandas as pd
 from pathlib import Path
