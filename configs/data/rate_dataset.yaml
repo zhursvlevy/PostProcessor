@@ -1,7 +1,7 @@
 _target_: src.data.rate_datamodule.RateDataModule
-train_dir: ${paths.data_dir}versions/not_processed_v1/0_processed.parquet
-val_dir: ${paths.data_dir}versions/not_processed_v1/1_processed.parquet
-test_dir: ${paths.data_dir}versions/not_processed_v1/2_processed.parquet
+train_dir: ${paths.data_dir}datasets/v1/train.parquet
+val_dir: ${paths.data_dir}datasets/v1/val.parquet
+test_dir: ${paths.data_dir}datasets/v1/test.parquet
 tokenizer: cointegrated/rubert-tiny2
 batch_size: 128 # Needs to be divisible by the number of devices (e.g., if in a distributed setup)
 num_workers: 0
