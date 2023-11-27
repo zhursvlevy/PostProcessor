@@ -13,8 +13,8 @@ class RateDataset(Dataset):
                  max_seq_len: int):
         dataframe = pd.read_parquet(data_dir)
         self.text = dataframe['text_markdown'].tolist()
-        if "wilson_rate" in dataframe.columns:
-            self.targets = dataframe['wilson_rate'].tolist()
+        if "wilson_score" in dataframe.columns:
+            self.targets = dataframe['wilson_score'].tolist()
         else:
             self.targets = wilson_score(dataframe["pluses"].to_numpy(), 
                                         dataframe["minuses"].to_numpy()).tolist()
