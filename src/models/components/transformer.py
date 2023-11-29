@@ -13,6 +13,7 @@ class Regressor(torch.nn.Module):
                 torch.nn.Dropout(p),
                 torch.nn.ReLU(),
                 torch.nn.Linear(hidden_dim, 1),
+                torch.nn.Sigmoid()
             )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:

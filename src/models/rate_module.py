@@ -111,6 +111,8 @@ class RateModule(LightningModule):
         self.log("val/r2", self.val_r2.compute(), on_step=False, on_epoch=True, prog_bar=True)
         # log `val_acc_best` as a value through `.compute()` method, instead of as a metric object
         # otherwise metric would be reset by lightning after each epoch
+        self.val_loss.reset()
+        self.val_r2.reset()
 
     def test_step(self, batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int) -> None:
         """Perform a single test step on a batch of data from the test set.
