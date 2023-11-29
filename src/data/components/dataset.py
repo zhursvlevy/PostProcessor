@@ -29,7 +29,8 @@ class RateDataset(Dataset):
             text,
             None,
             add_special_tokens=True,
-            padding="longest",
+            max_length=self.max_seq_len,
+            pad_to_max_length=True,
             return_token_type_ids=True,
             truncation=True
         )
