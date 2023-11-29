@@ -34,11 +34,9 @@ class RegressionTransformer(torch.nn.Module):
                                    dropout_rate)
 
     def forward(self, input_ids, attention_mask,):
-        output = self.encoder(
+        output = torch.mean(self.encoder(
             input_ids=input_ids,
             attention_mask=attention_mask
-        )
-        hidden_state = output[0]
-        hidden_state = hidden_state[:, 0]
+        ).last_hidden_state, dim=1)
 
-        return self.regressor(hidden_state)
+        return self.regressor(output)
