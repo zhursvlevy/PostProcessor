@@ -9,8 +9,10 @@ class Regressor(torch.nn.Module):
     def __init__(self, input_dim: int, hidden_dim: int, p: float = 0.2):
         super().__init__()
         self.regressor = torch.nn.Sequential(
+                torch.nn.Linear(input_dim, hidden_dim),
+                torch.nn.ReLU(),
                 torch.nn.Dropout(p),
-                torch.nn.Linear(input_dim, 1),
+                torch.nn.Linear(hidden_dim, 1),
                 torch.nn.Sigmoid()
             )
 
