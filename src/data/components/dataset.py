@@ -30,7 +30,6 @@ class RateDataset(Dataset):
             None,
             add_special_tokens=True,
             padding="longest",
-            pad_to_max_length=True,
             return_token_type_ids=True,
             truncation=True
         )
