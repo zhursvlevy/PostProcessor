@@ -25,18 +25,24 @@ class RegressionTransformer(torch.nn.Module):
                  model_path: str,
                  input_dim: int,
                  hidden_dim: int,
-                 dropout_rate: int):
+                 dropout_rate: int,
+                 freeze: bool = False):
         super().__init__()
         self.model_name = model_path
         self.encoder = AutoModel.from_pretrained(self.model_name)
+        if freeze: self._freeze()
         self.regressor = Regressor(input_dim, 
                                    hidden_dim, 
                                    dropout_rate)
 
-    def forward(self, input_ids, attention_mask,):
+    def forward(self, input_ids: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
         output = torch.mean(self.encoder(
             input_ids=input_ids,
             attention_mask=attention_mask
         ).last_hidden_state, dim=1)
 
         return self.regressor(output)
+    
+    def _freeze(self) -> None:
+        for param in self.encoder.parameters():
+            param.requires_grad = False
