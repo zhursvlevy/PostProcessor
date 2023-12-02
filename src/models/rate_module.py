@@ -161,7 +161,7 @@ class RateModule(LightningModule):
                 "lr_scheduler": {
                     "scheduler": scheduler,
                     "monitor": "val/mse_loss",
-                    "interval": "step", # or epoch
+                    "interval": "epoch",
                     "frequency": 1,
                 },
             }
