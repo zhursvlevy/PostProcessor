@@ -27,14 +27,12 @@ def main(dataset_dir: str, model_path: str, output_dir: str) -> None:
     embeddings = []
     scores = []
     texts = []
-    cnt = 0
 
     for i, row in tqdm(dataset.iterrows()):
         text = row["text_markdown"]
         inp = tokenizer.encode_plus(text,
                                     None,
                                     add_special_tokens=True,
-                                    # max_length=512,
                                     padding=True, # or "max_length"
                                     return_token_type_ids=True,
                                     truncation=True,
@@ -42,7 +40,6 @@ def main(dataset_dir: str, model_path: str, output_dir: str) -> None:
         last_hidden_state = model.encoder(input_ids=inp["input_ids"].to(device),
                                           attention_mask=inp["attention_mask"].to(device)
                                     ).last_hidden_state[:, 0, :].squeeze(0).cpu().numpy()
-        print(last_hidden_state.shape, last_hidden_state.dtype)
         embeddings.append(last_hidden_state)
         scores.append(row["wilson_score"])
         texts.append(text)
