@@ -19,7 +19,8 @@ def main(dataset_dir: str, model_path: str, output_dir: str) -> None:
 
     (Path(output_dir) / model_path).mkdir(parents=True, exist_ok=True)
 
-    model = RegressionTransformer(model_path, 312, 512, 0.5)
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    model = RegressionTransformer(model_path, 312, 512, 0.5).to(device)
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     dataset = pd.read_parquet(dataset_dir)
     model.eval()
@@ -38,8 +39,8 @@ def main(dataset_dir: str, model_path: str, output_dir: str) -> None:
                                     return_token_type_ids=True,
                                     truncation=True,
                                     return_tensors="pt")
-        last_hidden_state = model.encoder(input_ids=inp["input_ids"],
-                                          attention_mask=inp["attention_mask"]
+        last_hidden_state = model.encoder(input_ids=inp["input_ids"].to(device),
+                                          attention_mask=inp["attention_mask"].to(device)
                                     ).last_hidden_state[:, 0, :].squeeze(0).cpu().numpy()
         print(last_hidden_state.shape, last_hidden_state.dtype)
         embeddings.append(last_hidden_state)
