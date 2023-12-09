@@ -34,3 +34,7 @@ def clean_and_split(data_path: str, save_path: str) -> None:
             "val": val,
             "test": test
         }, f)
+
+
+if __name__ == "__main__":
+    clean_and_split()
