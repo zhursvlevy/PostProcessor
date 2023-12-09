@@ -9,8 +9,8 @@ import json
 URL_PATTERN = r'(https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}[-a-zA-Z0-9()@:%_+.~#?&/=]*)' 
 
 @click.command()
-@click.option("--data_path", "-d", default="../data/pikabu", help="path to source data")
-@click.option("--save_path", "-s", default="../data/source", help="path to save data")
+@click.option("--data_path", "-d", default="data/pikabu", help="path to source data")
+@click.option("--save_path", "-s", default="data/source", help="path to save data")
 def clean_and_split(data_path: str, save_path: str) -> None:
     data_path = Path(data_path)
     data = merge_dataset([data_path / "{}.parquet".format(i) for i in range(10)])
