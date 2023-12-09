@@ -1,7 +1,7 @@
 import numpy as np
 from pathlib import Path
 import click
-from .ipynb_func import merge_dataset
+from ipynb_func import merge_dataset
 from sklearn.model_selection import train_test_split
 import json
 
