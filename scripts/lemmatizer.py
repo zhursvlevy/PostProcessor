@@ -22,6 +22,8 @@ def process_post(path2data: str, save_dir: str) -> None:
         for row in tqdm(rows):
             processed.append(processor(row))
         data[column] = processed
+
+    Path(save_dir).mkdir(parents=True, exist_ok=True)
     data.to_parquet(Path(save_dir) / f"lemmatized_texts.parquet")
 
 if __name__ == "__main__":
