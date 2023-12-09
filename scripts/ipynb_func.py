@@ -3,21 +3,21 @@ from collections import Counter
 import numpy as np
 import re
 
-def merge_dataset(roots: list) -> pd.core.frame.DataFrame:
+def merge_dataset(roots: list) -> pd.DataFrame:
     """ 
     Function to merge all files, whose paths are in list "roots".
     roots -- list of roots to dataset files in .parquet extension
     """
     data = []
     for root in roots:
-        if isinstance(data, pd.core.frame.DataFrame):
+        if isinstance(data, pd.DataFrame):
             data = pd.concat([data, pd.read_parquet(root)])
         else:
             data = pd.read_parquet(root)
     return data
 
 
-def getwordlist(tags: pd.core.series.Series) -> list:
+def getwordlist(tags: pd.Series) -> list:
     """ 
     Returns list of all words, included in the transmitted pandas.Series.
     Data repetitions and order are preserved.
