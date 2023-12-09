@@ -4,7 +4,10 @@ import click
 from ipynb_func import merge_dataset
 from sklearn.model_selection import train_test_split
 import json
+import logging
 
+
+logger = logging.getLogger(__name__)
 
 URL_PATTERN = r'(https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}[-a-zA-Z0-9()@:%_+.~#?&/=]*)' 
 
@@ -13,7 +16,10 @@ URL_PATTERN = r'(https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()
 @click.option("--save_path", "-s", default="data/source", help="path to save data")
 def clean_and_split(data_path: str, save_path: str) -> None:
     data_path = Path(data_path)
+    logger.info("load data...")
     data = merge_dataset([data_path / "{}.parquet".format(i) for i in range(10)])
+    logger.info("data successfully loaded!")
+    logger.info("clean data...")
     images_or_videos = ["image" in row["blocks"]["type"] or "video" in row["blocks"]["type"] \
                         for i, row in data.iterrows()]
     text_data = data[~np.bool8(images_or_videos)]
@@ -22,7 +28,9 @@ def clean_and_split(data_path: str, save_path: str) -> None:
     text_data = text_data[~(((text_data['minuses'] == 0) & (text_data['pluses'] == 0)) \
                             | (text_data['minuses'] < 0) | (text_data['pluses'] < 0))]
     text_data.drop(columns=["blocks", "comments"], inplace=True)
+    logger.info("data cleaned!")
 
+    logger.info("save data...")
     save_path = Path(save_path)
     save_path.mkdir(exist_ok=True, parents=True)
     indexes = text_data["id"].tolist()
@@ -35,7 +43,7 @@ def clean_and_split(data_path: str, save_path: str) -> None:
             "val": val,
             "test": test
         }, f)
-
+    logger.info("data saved!")
 
 if __name__ == "__main__":
     clean_and_split()
