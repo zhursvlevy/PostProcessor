@@ -14,14 +14,14 @@ class RateDataModule(LightningDataModule):
 
     def __init__(
         self,
-        train_dir: str,
-        val_dir: str,
-        test_dir: str,
+        data_dir: str,
+        index_file: str,
         tokenizer: str,
         batch_size: int = 64,
         num_workers: int = 0,
         pin_memory: bool = False,
         max_seq_len: int = 512,
+        prepend_title: bool = True
     ) -> None:
 
         super().__init__()
