@@ -14,6 +14,7 @@ class RateModule(LightningModule):
         optimizer: torch.optim.Optimizer,
         scheduler: torch.optim.lr_scheduler,
         compile: bool,
+        freeze_after: int = None
     ) -> None:
 
         super().__init__()
@@ -23,7 +24,7 @@ class RateModule(LightningModule):
         self.save_hyperparameters(logger=False)
 
         self.net = net
-
+        self.freeze_after = freeze_after
         # loss function
         self.criterion = torch.nn.MSELoss()
 
@@ -49,7 +50,12 @@ class RateModule(LightningModule):
         self.train_r2.reset()
         self.val_r2.reset()
         self.val_loss.reset()
-        
+
+    def on_train_epoch_start(self) -> None:
+        "Lightning hook that is called when a training epoch starts."
+        if self.freeze_after is not None and self.current_epoch == self.freeze_after:
+            self.net._freeze()
+
     def model_step(
         self, batch: Tuple[torch.Tensor, torch.Tensor]
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
