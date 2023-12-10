@@ -62,4 +62,4 @@ class RateDataset(Dataset):
             title = title.split()
             text = " ".join(title + markdown)
             return text
-        return markdown
+        return " ".join(markdown)
