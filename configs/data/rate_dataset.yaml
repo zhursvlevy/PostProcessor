@@ -1,6 +1,6 @@
 _target_: src.data.rate_datamodule.RateDataModule
 data_dir: ${paths.data_dir}source/texts.parquet
-index_file: ${paths.data_dir}source/index.json
+index_file: ${paths.data_dir}source/indexes.json
 tokenizer: cointegrated/rubert-tiny2
 batch_size: 128 # Needs to be divisible by the number of devices (e.g., if in a distributed setup)
 num_workers: 0
