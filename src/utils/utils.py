@@ -127,4 +127,4 @@ def wilson_score(pluses: np.ndarray, minuses: np.ndarray, eps: float = 1e-7) -> 
 
 def _wilson_score(p: int, n: int) -> float:
     q = 1.96
-    return (p + q**2 / (2*n) ) / (1 + q**2/n)
+    return (p + q**2 / (2*n) - q*np.sqrt((p*(1 - p) + q**2/(4*n)) / n)) / (1 + q**2/n)
