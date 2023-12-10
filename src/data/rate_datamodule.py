@@ -70,19 +70,19 @@ class RateDataModule(LightningDataModule):
         # load and split datasets only if not loaded already
         if not self.data_train and not self.data_val and not self.data_test:
             tokenizer = AutoTokenizer.from_pretrained(self.hparams.tokenizer)
-            self.data_train = RateDataset(self.hparams.train_dir,
+            self.data_train = RateDataset(self.hparams.data_dir,
                                           self.hparams.index_file,
                                           "train", 
                                           tokenizer,
                                           self.hparams.max_seq_len,
                                           self.hparams.prepend_title)
-            self.data_val = RateDataset(self.hparams.val_dir, 
+            self.data_val = RateDataset(self.hparams.data_dir, 
                                         self.hparams.index_file,
                                         "val",
                                         tokenizer,
                                         self.hparams.max_seq_len,
                                         self.hparams.prepend_title)
-            self.data_test = RateDataset(self.hparams.test_dir, 
+            self.data_test = RateDataset(self.hparams.data_dir, 
                                          self.index_file,
                                          "test",
                                          tokenizer,
