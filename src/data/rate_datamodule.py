@@ -83,7 +83,7 @@ class RateDataModule(LightningDataModule):
                                         self.hparams.max_seq_len,
                                         self.hparams.prepend_title)
             self.data_test = RateDataset(self.hparams.data_dir, 
-                                         self.index_file,
+                                         self.hparams.index_file,
                                          "test",
                                          tokenizer,
                                          self.hparams.max_seq_len,
