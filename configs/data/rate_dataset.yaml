@@ -1,0 +1,9 @@
+_target_: src.data.rate_datamodule.RateDataModule
+train_dir: ${paths.data_dir}datasets/v1/train.parquet
+val_dir: ${paths.data_dir}datasets/v1/val.parquet
+test_dir: ${paths.data_dir}datasets/v1/test.parquet
+tokenizer: cointegrated/rubert-tiny2
+batch_size: 128 # Needs to be divisible by the number of devices (e.g., if in a distributed setup)
+num_workers: 0
+pin_memory: False
+max_seq_len: 512

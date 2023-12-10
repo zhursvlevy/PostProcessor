@@ -1,0 +1,25 @@
+_target_: src.models.rate_module.RateModule
+
+optimizer:
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 1e-4
+  weight_decay: 0.0
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+  _partial_: true
+  mode: min
+  factor: 0.1
+  patience: 10
+
+net:
+  _target_: src.models.components.transformer.RegressionTransformer
+  model_path: cointegrated/rubert-tiny2
+  input_dim: 312 # depends on encoder output dim, 768 for bert-base
+  hidden_dim: 64
+  dropout_rate: 0.2
+  freeze: False
+
+# compile model for faster training with pytorch 2.0
+compile: false

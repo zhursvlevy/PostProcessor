@@ -14,6 +14,9 @@ import re
 
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from pymystem3 import Mystem
+nltk.download('punkt')
+nltk.download('stopwords')
 
 
 class Processor:
@@ -24,16 +27,12 @@ class Processor:
                  punctuation: Optional[re.Pattern] = None) -> None:
         
         if not lemmatizer:
-            from pymystem3 import Mystem
-            nltk.download('punkt')
             self.stem = Mystem()
         else:
             self.stem = lemmatizer
-
-        if not stop_words:
-            nltk.download('stopwords')
-            self.stopwords = stopwords.words("russian")
-
+        self.stopwords = stopwords.words("russian")
+        if stop_words:
+            self.stopwords += stop_words
         if not punctuation:
             self.punctuation = re.compile(r"[^а-яА-Яa-zA-Z-]")
 
