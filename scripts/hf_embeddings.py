@@ -51,7 +51,7 @@ def main(dataset_dir: str, model_path: str, output_dir: str, prepend_title: bool
         last_hidden_state = torch.mean(model.encoder(input_ids=inp["input_ids"],
                                                      attention_mask=inp["attention_mask"]
                                     ).last_hidden_state, dim=1)
-        embeddings.append(last_hidden_state)
+        embeddings.append(last_hidden_state.squeeze(0).cpu().numpy())
         ids.append(row["id"])
 
     new_data = pd.DataFrame({"id": ids, "embedding": embeddings})
