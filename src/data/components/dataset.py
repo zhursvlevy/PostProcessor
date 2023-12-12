@@ -3,16 +3,25 @@ from torch.utils.data import Dataset
 from transformers import AutoTokenizer
 import pandas as pd
 from src.utils.utils import wilson_score
+import json
 
 
 class RateDataset(Dataset):
 
     def __init__(self,
                  data_dir: str,
+                 index_file: str,
+                 split: str,
                  tokenizer: AutoTokenizer,
-                 max_seq_len: int):
+                 max_seq_len: int,
+                 prepend_title: bool = True):
+        assert split in ("train", "test", "val"), "split must be train, test, val"
+        with open(index_file) as f:
+            index = json.load(f)[split]
         dataframe = pd.read_parquet(data_dir)
-        self.text = dataframe['text_markdown'].tolist()
+        dataframe = dataframe[dataframe["id"].isin(index)]
+        self.markdown = dataframe['text_markdown'].tolist()
+        self.title = dataframe['title'].tolist()
         if "wilson_score" in dataframe.columns:
             self.targets = dataframe['wilson_score'].tolist()
         else:
@@ -20,11 +29,10 @@ class RateDataset(Dataset):
                                         dataframe["minuses"].to_numpy()).tolist()
         self.tokenizer = tokenizer
         self.max_seq_len = max_seq_len
+        self.prepend_title = prepend_title
 
     def __getitem__(self, index):
-        text = str(self.text[index])
-        text = ' '.join(text.split())
-
+        text = self._build_input(index)
         inputs = self.tokenizer.encode_plus(
             text,
             None,
@@ -43,6 +51,15 @@ class RateDataset(Dataset):
             'targets': torch.tensor(self.targets[index], dtype=torch.float32).view(-1)
         }
 
-
     def __len__(self) -> int:
-        return len(self.text)
+        return len(self.markdown)
+
+    def _build_input(self, idx) -> str:
+        markdown = str(self.markdown[idx])
+        markdown = markdown.split()
+        if self.prepend_title:
+            title = str(self.title[idx])
+            title = title.split()
+            text = " ".join(title + markdown)
+            return text
+        return " ".join(markdown)

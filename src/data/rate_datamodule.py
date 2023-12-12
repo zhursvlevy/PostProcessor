@@ -1,8 +1,7 @@
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional
 
-import torch
 from lightning import LightningDataModule
-from torch.utils.data import ConcatDataset, DataLoader, Dataset, random_split
+from torch.utils.data import DataLoader, Dataset
 from transformers import AutoTokenizer
 import rootutils
 
@@ -12,69 +11,19 @@ from src.data.components.dataset import RateDataset
 
 
 class RateDataModule(LightningDataModule):
-    """`LightningDataModule` for the MNIST dataset.
-
-    The MNIST database of handwritten digits has a training set of 60,000 examples, and a test set of 10,000 examples.
-    It is a subset of a larger set available from NIST. The digits have been size-normalized and centered in a
-    fixed-size image. The original black and white images from NIST were size normalized to fit in a 20x20 pixel box
-    while preserving their aspect ratio. The resulting images contain grey levels as a result of the anti-aliasing
-    technique used by the normalization algorithm. the images were centered in a 28x28 image by computing the center of
-    mass of the pixels, and translating the image so as to position this point at the center of the 28x28 field.
-
-    A `LightningDataModule` implements 7 key methods:
-
-    ```python
-        def prepare_data(self):
-        # Things to do on 1 GPU/TPU (not on every GPU/TPU in DDP).
-        # Download data, pre-process, split, save to disk, etc...
-
-        def setup(self, stage):
-        # Things to do on every process in DDP.
-        # Load data, set variables, etc...
-
-        def train_dataloader(self):
-        # return train dataloader
-
-        def val_dataloader(self):
-        # return validation dataloader
-
-        def test_dataloader(self):
-        # return test dataloader
-
-        def predict_dataloader(self):
-        # return predict dataloader
-
-        def teardown(self, stage):
-        # Called on every process in DDP.
-        # Clean up after fit or test.
-    ```
-
-    This allows you to share a full dataset without explaining how to download,
-    split, transform and process the data.
-
-    Read the docs:
-        https://lightning.ai/docs/pytorch/latest/data/datamodule.html
-    """
 
     def __init__(
         self,
-        train_dir: str,
-        val_dir: str,
-        test_dir: str,
+        data_dir: str,
+        index_file: str,
         tokenizer: str,
         batch_size: int = 64,
         num_workers: int = 0,
         pin_memory: bool = False,
         max_seq_len: int = 512,
+        prepend_title: bool = True
     ) -> None:
-        """Initialize a `MNISTDataModule`.
 
-        :param data_dir: The data directory. Defaults to `"data/"`.
-        :param train_val_test_split: The train, validation and test split. Defaults to `(55_000, 5_000, 10_000)`.
-        :param batch_size: The batch size. Defaults to `64`.
-        :param num_workers: The number of workers. Defaults to `0`.
-        :param pin_memory: Whether to pin memory. Defaults to `False`.
-        """
         super().__init__()
 
         # this line allows to access init params with 'self.hparams' attribute
@@ -121,15 +70,24 @@ class RateDataModule(LightningDataModule):
         # load and split datasets only if not loaded already
         if not self.data_train and not self.data_val and not self.data_test:
             tokenizer = AutoTokenizer.from_pretrained(self.hparams.tokenizer)
-            self.data_train = RateDataset(self.hparams.train_dir, 
+            self.data_train = RateDataset(self.hparams.data_dir,
+                                          self.hparams.index_file,
+                                          "train", 
                                           tokenizer,
-                                          self.hparams.max_seq_len)
-            self.data_val = RateDataset(self.hparams.val_dir, 
+                                          self.hparams.max_seq_len,
+                                          self.hparams.prepend_title)
+            self.data_val = RateDataset(self.hparams.data_dir, 
+                                        self.hparams.index_file,
+                                        "val",
                                         tokenizer,
-                                        self.hparams.max_seq_len)
-            self.data_test = RateDataset(self.hparams.test_dir, 
+                                        self.hparams.max_seq_len,
+                                        self.hparams.prepend_title)
+            self.data_test = RateDataset(self.hparams.data_dir, 
+                                         self.hparams.index_file,
+                                         "test",
                                          tokenizer,
-                                         self.hparams.max_seq_len)
+                                         self.hparams.max_seq_len,
+                                         self.hparams.prepend_title)
             
     def train_dataloader(self) -> DataLoader[Any]:
         """Create and return the train dataloader.

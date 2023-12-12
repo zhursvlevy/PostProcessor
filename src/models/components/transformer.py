@@ -65,17 +65,16 @@ class RegressionE5(torch.nn.Module):
                                    dropout_rate)
 
     def forward(self, input_ids: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
-        output = torch.mean(self.encoder(
+        output = self._average_pool(self.encoder(
             input_ids=input_ids,
             attention_mask=attention_mask
-        ).last_hidden_state, dim=1)
+        ).last_hidden_state, attention_mask)
 
         return self.regressor(output)
     
     def _freeze(self) -> None:
         for param in self.encoder.parameters():
             param.requires_grad = False
-
 
     def _average_pool(self, last_hidden_states: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
         last_hidden = last_hidden_states.masked_fill(~attention_mask[..., None].bool(), 0.0)
