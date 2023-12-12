@@ -12,12 +12,18 @@ from src.models.components.transformer import RegressionTransformer
 
 @click.command()
 @click.option("--dataset_dir", "-d", help="dataset directory")
+@click.option("--tag", "-t", default="embeddings", help="hugging face text encoder")
 @click.option("--model_path", "-m", default="cointegrated/rubert-tiny2", help="hugging face text encoder")
 @click.option("--output_dir", "-o", default="../data/embeddings", help="path to save embeddings")
-@click.option("--prepend_title", "-t", default=False, help="prepend title to markdown")
+@click.option("--prepend_title", "-p", default=False, help="prepend title to markdown")
 @click.option("--max_seq_len", "-l", default=512, help="max length of sentense")
 @torch.no_grad()
-def main(dataset_dir: str, model_path: str, output_dir: str, prepend_title: bool = False, max_seq_len: int = 512) -> None:
+def main(dataset_dir: str, 
+         tag: str, 
+         model_path: str, 
+         output_dir: str, 
+         prepend_title: bool = False, 
+         max_seq_len: int = 512) -> None:
 
     (Path(output_dir) / model_path).mkdir(parents=True, exist_ok=True)
 
@@ -55,7 +61,7 @@ def main(dataset_dir: str, model_path: str, output_dir: str, prepend_title: bool
         ids.append(row["id"])
 
     new_data = pd.DataFrame({"id": ids, "embedding": embeddings})
-    new_data.to_parquet(Path(output_dir) / model_path / Path(dataset_dir).name)
+    new_data.to_parquet(Path(output_dir) / model_path / (tag + Path(dataset_dir).name))
 
 if __name__ == "__main__":
     main()
