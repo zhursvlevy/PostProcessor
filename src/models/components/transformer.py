@@ -1,7 +1,7 @@
 from typing import Dict
 
 import torch
-from transformers import AutoModel, XLMRobertaModel
+from transformers import AutoModel, AutoConfig
 
 
 class Regressor(torch.nn.Module):
@@ -26,14 +26,20 @@ class RegressionTransformer(torch.nn.Module):
                  input_dim: int,
                  hidden_dim: int,
                  dropout_rate: int,
-                 freeze: bool = False):
+                 freeze: bool = False,
+                 weights_path: str = None):
         super().__init__()
         self.model_name = model_path
-        self.encoder = AutoModel.from_pretrained(self.model_name)
-        if freeze: self._freeze()
         self.regressor = Regressor(input_dim, 
                                    hidden_dim, 
                                    dropout_rate)
+        if weights_path:
+            config = AutoConfig.from_pretrained(model_path)
+            self.encoder = AutoModel.from_config(config)
+            self.load_state_dict(torch.load(weights_path))
+        else:
+            self.encoder = AutoModel.from_pretrained(self.model_name)
+        if freeze: self._freeze()
 
     def forward(self, input_ids: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
         output = torch.mean(self.encoder(
@@ -46,36 +52,3 @@ class RegressionTransformer(torch.nn.Module):
     def _freeze(self) -> None:
         for param in self.encoder.parameters():
             param.requires_grad = False
-
-
-class RegressionE5(torch.nn.Module):
-
-    def __init__(self, 
-                 model_path: str,
-                 input_dim: int,
-                 hidden_dim: int,
-                 dropout_rate: int,
-                 freeze: bool = False):
-        super().__init__()
-        self.model_name = model_path
-        self.encoder = XLMRobertaModel.from_pretrained(model_path, use_cache=False)
-        if freeze: self._freeze()
-        self.regressor = Regressor(input_dim, 
-                                   hidden_dim, 
-                                   dropout_rate)
-
-    def forward(self, input_ids: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
-        output = self._average_pool(self.encoder(
-            input_ids=input_ids,
-            attention_mask=attention_mask
-        ).last_hidden_state, attention_mask)
-
-        return self.regressor(output)
-    
-    def _freeze(self) -> None:
-        for param in self.encoder.parameters():
-            param.requires_grad = False
-
-    def _average_pool(self, last_hidden_states: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
-        last_hidden = last_hidden_states.masked_fill(~attention_mask[..., None].bool(), 0.0)
-        return last_hidden.sum(dim=1) / attention_mask.sum(dim=1)[..., None]

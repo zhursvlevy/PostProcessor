@@ -17,18 +17,20 @@ from src.models.components.transformer import RegressionTransformer
 @click.option("--output_dir", "-o", default="../data/embeddings", help="path to save embeddings")
 @click.option("--prepend_title", "-p", default=False, help="prepend title to markdown")
 @click.option("--max_seq_len", "-l", default=512, help="max length of sentense")
+@click.option("--weights_path", "-w", default=None, help="max length of sentense")
 @torch.no_grad()
 def main(dataset_dir: str, 
          tag: str, 
          model_path: str, 
          output_dir: str, 
          prepend_title: bool = False, 
-         max_seq_len: int = 512) -> None:
+         max_seq_len: int = 512,
+         weights_path: str = None) -> None:
 
     (Path(output_dir) / model_path).mkdir(parents=True, exist_ok=True)
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model = RegressionTransformer(model_path, 312, 512, 0.5).to(device)
+    model = RegressionTransformer(model_path, 312, 512, 0.5, weights_path).to(device)
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     dataset = pd.read_parquet(dataset_dir)
     model.eval()

@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import hydra
 import lightning as L
 import rootutils
+import torch
 from lightning import Callback, LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import Logger
 from omegaconf import DictConfig
@@ -61,6 +62,10 @@ def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
 
     train_metrics = trainer.callback_metrics
+    if cfg.get("save_pt"):
+        ckpt_path = trainer.checkpoint_callback.best_model_path
+        model = model.load_from_checkpoint(ckpt_path).net
+        torch.save(model.state_dict(), ckpt_path.replace(".ckpt", ".pt"))
 
     if cfg.get("test"):
         log.info("Starting testing!")
