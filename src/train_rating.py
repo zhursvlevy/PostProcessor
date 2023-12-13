@@ -66,6 +66,7 @@ def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         ckpt_path = trainer.checkpoint_callback.best_model_path
         model = model.load_from_checkpoint(ckpt_path).net
         torch.save(model.state_dict(), ckpt_path.replace(".ckpt", ".pt"))
+        log.info("saving model in .pt format")
 
     if cfg.get("test"):
         log.info("Starting testing!")
