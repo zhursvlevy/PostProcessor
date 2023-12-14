@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from collections import Counter
 import numpy as np
 import re
@@ -79,3 +80,14 @@ def formateTags(data):
     tags = [tag_line for tag_line in data.tags]
     tags = [re.split(r';', tags) for tags in tags]
     return tags
+
+def lower_tags(df):
+    tmp = df.tags
+    if isinstance(df.iloc[0]['tags'], np.ndarray):
+        tmp = []
+        for tgs in df.tags:
+            tmp.append(tgs.tolist())
+    lowertgs = []
+    for tgs in tmp:
+        lowertgs.append(list(map(lambda x: x.lower(), tgs)))
+    df.tags = lowertgs
