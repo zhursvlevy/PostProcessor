@@ -5,6 +5,7 @@ from torch.utils.data import Dataset
 from transformers import AutoTokenizer
 import pandas as pd
 from src.utils.utils import wilson_score
+from sklearn.preprocessing import StandardScaler
 import json
 
 
@@ -33,6 +34,8 @@ class RateDataset(Dataset):
                                         dataframe["minuses"].to_numpy())
         else:
             self.targets = dataframe[["pluses", "minuses"]].to_numpy()
+            scaler = StandardScaler()
+            self.targets = scaler.fit_transform(self.targets)
         self.tokenizer = tokenizer
         self.max_seq_len = max_seq_len
         self.prepend_title = prepend_title
