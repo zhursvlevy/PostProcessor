@@ -20,7 +20,9 @@ net:
   hidden_dim: 64
   dropout_rate: 0.2
   freeze: False
+  use_sigmoid: False
 
 # compile model for faster training with pytorch 2.0
 compile: false
 freeze_after: null
+output_size: 2

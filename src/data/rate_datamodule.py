@@ -21,7 +21,8 @@ class RateDataModule(LightningDataModule):
         num_workers: int = 0,
         pin_memory: bool = False,
         max_seq_len: int = 512,
-        prepend_title: bool = True
+        prepend_title: bool = True,
+        target: str = None
     ) -> None:
 
         super().__init__()
@@ -75,19 +76,24 @@ class RateDataModule(LightningDataModule):
                                           "train", 
                                           tokenizer,
                                           self.hparams.max_seq_len,
-                                          self.hparams.prepend_title)
+                                          self.hparams.prepend_title,
+                                          self.hparams.target)
+            
             self.data_val = RateDataset(self.hparams.data_dir, 
                                         self.hparams.index_file,
                                         "val",
                                         tokenizer,
                                         self.hparams.max_seq_len,
-                                        self.hparams.prepend_title)
+                                        self.hparams.prepend_title,
+                                        self.hparams.target)
+            
             self.data_test = RateDataset(self.hparams.data_dir, 
                                          self.hparams.index_file,
                                          "test",
                                          tokenizer,
                                          self.hparams.max_seq_len,
-                                         self.hparams.prepend_title)
+                                         self.hparams.prepend_title,
+                                         self.hparams.target)
             
     def train_dataloader(self) -> DataLoader[Any]:
         """Create and return the train dataloader.
