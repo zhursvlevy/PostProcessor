@@ -6,13 +6,17 @@ from transformers import AutoModel, AutoConfig
 
 class Regressor(torch.nn.Module):
 
-    def __init__(self, input_dim: int, hidden_dim: int, p: float = 0.2):
+    def __init__(self, 
+                 input_dim: int, 
+                 hidden_dim: int, 
+                 output_size: int, 
+                 p: float = 0.2):
         super().__init__()
         self.regressor = torch.nn.Sequential(
                 torch.nn.Linear(input_dim, hidden_dim),
                 torch.nn.ReLU(),
                 torch.nn.Dropout(p),
-                torch.nn.Linear(hidden_dim, 1)
+                torch.nn.Linear(hidden_dim, output_size)
             )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -24,6 +28,7 @@ class RegressionTransformer(torch.nn.Module):
                  model_path: str,
                  input_dim: int,
                  hidden_dim: int,
+                 output_size: int,
                  dropout_rate: int,
                  freeze: bool = False,
                  weights_path: str = None,
@@ -32,7 +37,10 @@ class RegressionTransformer(torch.nn.Module):
         self.model_name = model_path
         self.regressor = Regressor(input_dim, 
                                    hidden_dim, 
+                                   output_size,
                                    dropout_rate)
+        
+        self.output_size = output_size
         if weights_path:
             config = AutoConfig.from_pretrained(model_path)
             self.encoder = AutoModel.from_config(config)

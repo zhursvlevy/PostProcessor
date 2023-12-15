@@ -15,7 +15,6 @@ class RateModule(LightningModule):
         scheduler: torch.optim.lr_scheduler,
         compile: bool,
         freeze_after: int = None,
-        output_size: int = 1
     ) -> None:
 
         super().__init__()
@@ -30,13 +29,13 @@ class RateModule(LightningModule):
         self.criterion = torch.nn.MSELoss()
 
         # metric objects for calculating and averaging accuracy across batches
-        self.train_r2 = R2Score(num_outputs=output_size)
+        self.train_r2 = R2Score(num_outputs=net.output_size)
 
         self.train_loss = MeanMetric()
         self.val_loss = MeanMetric()
         self.test_loss = MeanMetric()
-        self.val_r2 = R2Score(num_outputs=output_size)
-        self.test_r2 = R2Score(num_outputs=output_size)
+        self.val_r2 = R2Score(num_outputs=net.output_size)
+        self.test_r2 = R2Score(num_outputs=net.output_size)
 
     def forward(self, ids: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
         """Perform a forward pass through the model `self.net`.
