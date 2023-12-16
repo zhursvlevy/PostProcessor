@@ -3,6 +3,8 @@ data/*
 !data/.gitkeep
 logs/*
 !logs/.gitkeep
+models/*
+!models/.gitkeep
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
