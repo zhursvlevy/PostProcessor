@@ -1,7 +1,7 @@
 import rootutils
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
-from src.data.components.preprocessing import Processor
+from pytorch_models.data.components.preprocessing import Processor
 from tqdm import tqdm
 import pandas as pd
 from pathlib import Path
