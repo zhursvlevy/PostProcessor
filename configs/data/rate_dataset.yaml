@@ -8,3 +8,6 @@ pin_memory: False
 max_seq_len: 512
 prepend_title: True
 target: "raw"
+scaler:
+  _target_: sklearn.preprocessing.StandardScaler
+use_scaler: true

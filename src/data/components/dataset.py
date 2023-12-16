@@ -1,11 +1,10 @@
-from typing import Tuple
+from typing import Tuple, Any
 
 import torch
 from torch.utils.data import Dataset
 from transformers import AutoTokenizer
 import pandas as pd
 from src.utils.utils import wilson_score
-from sklearn.preprocessing import StandardScaler
 import json
 
 
@@ -18,7 +17,9 @@ class RateDataset(Dataset):
                  tokenizer: AutoTokenizer,
                  max_seq_len: int,
                  prepend_title: bool = True,
-                 target: str = "wilson"):
+                 target: str = "wilson",
+                 scaler: Any = None,
+                 use_scaler: bool = False):
 
         assert split in ("train", "test", "val"), "split must be train, test, val"
         assert target in ("wilson", "raw"), "target must be 'wilson' or 'raw'"
@@ -33,9 +34,18 @@ class RateDataset(Dataset):
             self.targets = wilson_score(dataframe["pluses"].to_numpy(), 
                                         dataframe["minuses"].to_numpy())
         else:
-            self.targets = dataframe[["pluses", "minuses"]].to_numpy()
-            scaler = StandardScaler()
-            self.targets = scaler.fit_transform(self.targets)
+            self.targets = dataframe[["pluses", "minuses"]].to_numpy()      
+        if use_scaler:
+            assert scaler is not None, "if use_scaler is true"
+            if  split == "train":
+                self.scaler = scaler
+                self.scaler.fit(self.targets)
+                self.targets = self.scaler.transform(self.targets)
+            else:
+                self.scaler = scaler
+                self.targets = self.scaler.transform(self.targets)
+        else:
+            self.scaler = None
         self.tokenizer = tokenizer
         self.max_seq_len = max_seq_len
         self.prepend_title = prepend_title

@@ -77,15 +77,19 @@ class RateDataModule(LightningDataModule):
                                           tokenizer,
                                           self.hparams.max_seq_len,
                                           self.hparams.prepend_title,
-                                          self.hparams.target)
-            
+                                          self.hparams.target,
+                                          scaler=self.hparams.scaler,
+                                          use_scaler=self.hparams.use_scaler)
+            scaler = self.data_train.scaler
             self.data_val = RateDataset(self.hparams.data_dir, 
                                         self.hparams.index_file,
                                         "val",
                                         tokenizer,
                                         self.hparams.max_seq_len,
                                         self.hparams.prepend_title,
-                                        self.hparams.target)
+                                        self.hparams.target,
+                                        scaler=scaler,
+                                        use_scaler=self.hparams.use_scaler)
             
             self.data_test = RateDataset(self.hparams.data_dir, 
                                          self.hparams.index_file,
@@ -93,7 +97,9 @@ class RateDataModule(LightningDataModule):
                                          tokenizer,
                                          self.hparams.max_seq_len,
                                          self.hparams.prepend_title,
-                                         self.hparams.target)
+                                         self.hparams.target,
+                                         scaler=scaler,
+                                         use_scaler=self.hparams.use_scaler)
             
     def train_dataloader(self) -> DataLoader[Any]:
         """Create and return the train dataloader.
