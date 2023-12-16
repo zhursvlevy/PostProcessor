@@ -22,7 +22,9 @@ class RateDataModule(LightningDataModule):
         pin_memory: bool = False,
         max_seq_len: int = 512,
         prepend_title: bool = True,
-        target: str = None
+        target: str = None,
+        scaler: Any = None,
+        use_scaler: bool = False
     ) -> None:
 
         super().__init__()
