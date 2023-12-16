@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import Dataset
 from transformers import AutoTokenizer
 import pandas as pd
-from src.utils.utils import wilson_score
+from pytorch_models.utils.utils import wilson_score
 import json
 
 
