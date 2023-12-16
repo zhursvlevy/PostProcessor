@@ -92,12 +92,19 @@ def lower_tags(df):
         lowertgs.append(list(map(lambda x: x.lower(), tgs)))
     df.tags = lowertgs
 
-def recallk(df_true_tags, df_pred_tags):
+def recallk(df_true_tags, df_pred_tags, k=None):
     count = 0
     total_count = 0
     for true_tags, pred_tags in zip(df_true_tags, df_pred_tags):
         total_count += 1
-        for pred_tag in pred_tags:
-            if pred_tag in true_tags:
-                count += 1
+        if k is not None:
+            for pred_tag in pred_tags[:k]:
+                if pred_tag in true_tags:
+                    count += 1
+                    continue
+        else:
+            for pred_tag in pred_tags:
+                if pred_tag in true_tags:
+                    count += 1
+                    continue
     return count/total_count
