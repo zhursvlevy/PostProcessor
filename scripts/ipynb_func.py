@@ -3,6 +3,7 @@ import numpy as np
 from collections import Counter
 import numpy as np
 import re
+import matplotlib.pyplot as plt
 
 def merge_dataset(roots: list) -> pd.DataFrame:
     """ 
@@ -108,3 +109,75 @@ def recallk(df_true_tags, df_pred_tags, k=None):
                     count += 1
                     continue
     return count/total_count
+
+def get_y_pred_items(model_out, out_Vectorizer, THR):
+    y_pred_items = []
+    for lbls in model_out:
+        tmp = []
+        for i in range(len(lbls)):
+            if abs(lbls[i]) < THR:
+                tmp.append((out_Vectorizer.get_feature_names_out()[i], lbls[i]))
+        y_pred_items.append(tmp)
+    sorted_y_pred_items = [sorted(elems, key=lambda x: x[1], reverse=True) for elems in y_pred_items]
+    return sorted_y_pred_items
+
+def get_labels(model_out, out_Vectorizer, THR):
+    sorted_y_pred = get_y_pred_items(model_out, out_Vectorizer, THR)
+    pred_labels = [[elem[0] for elem in elems] for elems in sorted_y_pred]
+    return pred_labels
+
+def plot_model_history(history, title='Model loss and acc during training'):
+    train_loss = history['train_loss']
+    val_loss = history['val_loss']
+    val_acc = history['val_acc']
+
+    fig, axs = plt.subplot_mosaic([[1, 2], [1, 3]], figsize=(17, 8))
+    fig.suptitle(title)
+    fig.subplots_adjust(top=0.92)
+
+    axs[1].plot([i for i in range(len(train_loss))], train_loss)
+    axs[1].set_xlabel('Time')
+    axs[1].set_ylabel('Loss')
+    axs[1].set_title('Loss during training of a model')
+    axs[1].grid()
+
+
+    axs[2].plot([i+1 for i in range(len(val_loss))], val_loss)
+    axs[2].set_xticks([i+1 for i in range(len(val_acc))])
+    axs[2].set_ylabel('Loss')
+    axs[2].set_title('Loss on validation')
+    axs[2].grid()
+
+    axs[3].plot([i+1 for i in range(len(val_acc))], val_acc)
+    axs[3].set_xticks([i+1 for i in range(len(val_acc))])
+    axs[3].set_xlabel('Epoch')
+    axs[3].set_ylabel('Accuracy')
+    axs[3].set_title('Accuracy on validation')
+    axs[3].grid()
+
+
+def sorted_labels(labels, probas, Vectorizer):
+    val_prob = []
+    for i in range(len(probas)):
+        tmp = []
+        for j in range(len(probas[i])):
+            if labels.toarray()[i][j] != 0:
+                tmp.append(probas[i][j])
+        val_prob.append(tmp)
+
+    sort_y = []
+    for tags, probs in zip(Vectorizer.inverse_transform(labels), val_prob):
+        tmp = []
+        for tag, prob in zip(tags, probs):
+            tmp.append((tag, prob))
+        sort_y.append(tmp)
+
+    sort_y = [sorted(tags, key=lambda x: -x[1]) for tags in sort_y]
+
+    sss = []
+    for tags in sort_y:
+        tmp = []
+        for tag in tags:
+            tmp.append(tag[0])
+        sss.append(tmp)
+    return sss
