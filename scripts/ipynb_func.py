@@ -94,21 +94,29 @@ def lower_tags(df):
     df.tags = lowertgs
 
 def recallk(df_true_tags, df_pred_tags, k=None):
-    count = 0
-    total_count = 0
-    for true_tags, pred_tags in zip(df_true_tags, df_pred_tags):
-        total_count += 1
-        if k is not None:
-            for pred_tag in pred_tags[:k]:
-                if pred_tag in true_tags:
-                    count += 1
-                    continue
-        else:
-            for pred_tag in pred_tags:
-                if pred_tag in true_tags:
-                    count += 1
-                    continue
-    return count/total_count
+    #count = 0
+    #total_count = 0
+    #for true_tags, pred_tags in zip(df_true_tags, df_pred_tags):
+    #    total_count += 1
+    #    if k is not None:
+    #        for pred_tag in pred_tags[:k]:
+    #            if pred_tag in true_tags:
+    #                count += 1
+    #                continue
+    #    else:
+    #        for pred_tag in pred_tags:
+    #            if pred_tag in true_tags:
+    #                count += 1
+    #                continue
+    #return count/total_count
+    recalls = []
+    for pred, true in zip(df_pred_tags, df_true_tags):
+        pred = pred[:k]
+        numenator = len(set(pred).intersection(true))
+        denometator = len(true)
+        recalls.append(numenator/denometator)
+    return np.mean(recalls), np.median(recalls)
+
 
 def get_y_pred_items(model_out, out_Vectorizer, THR):
     y_pred_items = []
