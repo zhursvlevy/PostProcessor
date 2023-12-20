@@ -1,0 +1,6 @@
+bagging_temperature: 10
+bootstrap_type: Bayesian
+iterations: 13000
+l2_leaf_reg: 12
+learning_rate: 0.03
+random_state: 42
