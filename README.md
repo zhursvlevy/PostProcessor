@@ -27,11 +27,11 @@ python src/train.py experiment=rate_prediction model.net.hidden_dim=256 model.op
 
 |     Model     |       $R^2$   |  RMSE  |
 | ------------- | ------------- | -------
-|  [BTTFW](./pytorch_models/scripts/BTTFW.sh)        |     0.2584    | 0.2285  |
-|  [CBTTW](./notebooks/rating_predict/catboost_regressor.ipynb)         |     0.2531    | 0.2293  |
-|  [BTFW](./pytorch_models/scripts/BTFW.sh)         |     0.2461    | 0.2304  |
-|  [BW](./pytorch_models/scripts/BW.sh)           |     0.2411    | 0.2312  |
-|  [BR](./pytorch_models/scripts/BR.sh)           | 0.0609 | 0.9972  |
+|  [BTTFW](zhursvlevy/PostProcessor/pytorch_models/scripts/BTTFW.sh)        |     0.2584    | 0.2285  |
+|  [CBTTW](zhursvlevy/PostProcessor/notebooks/rating_predict/catboost_regressor.ipynb)         |     0.2531    | 0.2293  |
+|  [BTFW](zhursvlevy/PostProcessor/pytorch_models/scripts/BTFW.sh)         |     0.2461    | 0.2304  |
+|  [BW](zhursvlevy/PostProcessor/pytorch_models/scripts/BW.sh)           |     0.2411    | 0.2312  |
+|  [BR](zhursvlevy/PostProcessor/pytorch_models/scripts/BR.sh)           | 0.0609 | 0.9972  |
 
 1. BTTFW = finetuned BTTFW = **B**ERT with **T**itle prepending to the text markdown with **F**reezed weights after first two epochs with **W**ilson scrore targets.
 2. CBTTW = CatBoost trained on finetuned bert embedding with **W**ilson scrore targets.
