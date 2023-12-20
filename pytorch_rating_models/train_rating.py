@@ -10,7 +10,7 @@ from omegaconf import DictConfig
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
-from pytorch_models.utils import (
+from pytorch_rating_models.utils import (
     RankedLogger,
     extras,
     get_metric_value,

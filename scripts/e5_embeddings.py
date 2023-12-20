@@ -7,7 +7,7 @@ import rootutils
 from tqdm import tqdm
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
-from pytorch_models.models.components.transformer import RegressionTransformer
+from pytorch_rating_models.models.components.transformer import RegressionTransformer
 import torch.nn.functional as F
 from torch import Tensor
 from transformers import XLMRobertaTokenizer, XLMRobertaModel

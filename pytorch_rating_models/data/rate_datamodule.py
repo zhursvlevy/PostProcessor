@@ -7,7 +7,7 @@ import rootutils
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
-from pytorch_models.data.components.dataset import RateDataset
+from pytorch_rating_models.data.components.dataset import RateDataset
 
 
 class RateDataModule(LightningDataModule):

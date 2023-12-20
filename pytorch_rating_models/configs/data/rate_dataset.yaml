@@ -1,4 +1,4 @@
-_target_: pytorch_models.data.rate_datamodule.RateDataModule
+_target_: pytorch_rating_models.data.rate_datamodule.RateDataModule
 data_dir: ${paths.data_dir}source/texts.parquet
 index_file: ${paths.data_dir}source/indexes.json
 tokenizer: cointegrated/rubert-tiny2
