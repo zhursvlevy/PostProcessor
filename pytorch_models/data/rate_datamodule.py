@@ -7,7 +7,7 @@ import rootutils
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 
-from src.data.components.dataset import RateDataset
+from pytorch_models.data.components.dataset import RateDataset
 
 
 class RateDataModule(LightningDataModule):
@@ -21,7 +21,10 @@ class RateDataModule(LightningDataModule):
         num_workers: int = 0,
         pin_memory: bool = False,
         max_seq_len: int = 512,
-        prepend_title: bool = True
+        prepend_title: bool = True,
+        target: str = None,
+        scaler: Any = None,
+        use_scaler: bool = False
     ) -> None:
 
         super().__init__()
@@ -75,19 +78,30 @@ class RateDataModule(LightningDataModule):
                                           "train", 
                                           tokenizer,
                                           self.hparams.max_seq_len,
-                                          self.hparams.prepend_title)
+                                          self.hparams.prepend_title,
+                                          self.hparams.target,
+                                          scaler=self.hparams.scaler,
+                                          use_scaler=self.hparams.use_scaler)
+            scaler = self.data_train.scaler
             self.data_val = RateDataset(self.hparams.data_dir, 
                                         self.hparams.index_file,
                                         "val",
                                         tokenizer,
                                         self.hparams.max_seq_len,
-                                        self.hparams.prepend_title)
+                                        self.hparams.prepend_title,
+                                        self.hparams.target,
+                                        scaler=scaler,
+                                        use_scaler=self.hparams.use_scaler)
+            
             self.data_test = RateDataset(self.hparams.data_dir, 
                                          self.hparams.index_file,
                                          "test",
                                          tokenizer,
                                          self.hparams.max_seq_len,
-                                         self.hparams.prepend_title)
+                                         self.hparams.prepend_title,
+                                         self.hparams.target,
+                                         scaler=scaler,
+                                         use_scaler=self.hparams.use_scaler)
             
     def train_dataloader(self) -> DataLoader[Any]:
         """Create and return the train dataloader.

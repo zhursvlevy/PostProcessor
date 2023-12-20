@@ -14,7 +14,7 @@ class RateModule(LightningModule):
         optimizer: torch.optim.Optimizer,
         scheduler: torch.optim.lr_scheduler,
         compile: bool,
-        freeze_after: int = None
+        freeze_after: int = None,
     ) -> None:
 
         super().__init__()
@@ -29,13 +29,13 @@ class RateModule(LightningModule):
         self.criterion = torch.nn.MSELoss()
 
         # metric objects for calculating and averaging accuracy across batches
-        self.train_r2 = R2Score()
+        self.train_r2 = R2Score(num_outputs=net.output_size)
 
         self.train_loss = MeanMetric()
         self.val_loss = MeanMetric()
         self.test_loss = MeanMetric()
-        self.val_r2 = R2Score()
-        self.test_r2 = R2Score()
+        self.val_r2 = R2Score(num_outputs=net.output_size)
+        self.test_r2 = R2Score(num_outputs=net.output_size)
 
     def forward(self, ids: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
         """Perform a forward pass through the model `self.net`.
@@ -86,17 +86,19 @@ class RateModule(LightningModule):
         loss, preds, targets = self.model_step(batch)
 
         # update and log metrics
-        self.train_loss(loss)
-        self.train_r2(preds, targets)
-        self.log("train/mse_loss", self.train_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("train/r2", self.train_r2, on_step=False, on_epoch=True, prog_bar=True)
+        self.train_loss.update(loss)
+        self.train_r2.update(preds, targets)
 
         # return loss or backpropagation will fail
         return loss
 
     def on_train_epoch_end(self) -> None:
         "Lightning hook that is called when a training epoch ends."
-        pass
+        self.log("train/mse_loss", self.train_loss.compute(), on_step=False, on_epoch=True, prog_bar=True)
+        self.log("train/r2", self.train_r2.compute(), on_step=False, on_epoch=True, prog_bar=True)
+
+        self.train_loss.reset()
+        self.train_r2.reset()
 
     def validation_step(self, batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int) -> None:
         """Perform a single validation step on a batch of data from the validation set.

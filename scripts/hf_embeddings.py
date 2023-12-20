@@ -7,45 +7,63 @@ import rootutils
 from tqdm import tqdm
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
-from src.models.components.transformer import RegressionTransformer
+from pytorch_models.models.components.transformer import RegressionTransformer
 
 
 @click.command()
 @click.option("--dataset_dir", "-d", help="dataset directory")
+@click.option("--tag", "-t", default="embeddings", help="hugging face text encoder")
 @click.option("--model_path", "-m", default="cointegrated/rubert-tiny2", help="hugging face text encoder")
 @click.option("--output_dir", "-o", default="../data/embeddings", help="path to save embeddings")
+@click.option("--prepend_title", "-p", default=False, help="prepend title to markdown")
+@click.option("--max_seq_len", "-l", default=512, help="max length of sentense")
+@click.option("--weights_path", "-w", default=None, help="max length of sentense")
 @torch.no_grad()
-def main(dataset_dir: str, model_path: str, output_dir: str) -> None:
+def main(dataset_dir: str, 
+         tag: str, 
+         model_path: str, 
+         output_dir: str, 
+         prepend_title: bool = False, 
+         max_seq_len: int = 512,
+         weights_path: str = None) -> None:
 
     (Path(output_dir) / model_path).mkdir(parents=True, exist_ok=True)
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model = RegressionTransformer(model_path, 312, 512, 0.5).to(device)
+    model = RegressionTransformer(model_path, 312, 512, 0.5, weights_path).to(device)
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     dataset = pd.read_parquet(dataset_dir)
     model.eval()
     embeddings = []
-    scores = []
-    texts = []
+    ids = []
 
     for i, row in tqdm(dataset.iterrows()):
-        text = row["text_markdown"]
-        inp = tokenizer.encode_plus(text,
-                                    None,
-                                    add_special_tokens=True,
-                                    padding=True, # or "max_length"
-                                    return_token_type_ids=True,
-                                    truncation=True,
-                                    return_tensors="pt")
-        last_hidden_state = model.encoder(input_ids=inp["input_ids"].to(device),
-                                          attention_mask=inp["attention_mask"].to(device)
-                                    ).last_hidden_state[:, 0, :].squeeze(0).cpu().numpy()
-        embeddings.append(last_hidden_state)
-        scores.append(row["wilson_score"])
-        texts.append(text)
+        markdown = str(row["text_markdown"])
+        markdown = markdown.split()
+        if prepend_title:
+            title = str(row["title"])
+            title = title.split()
+            text = " ".join(title + markdown)
+        else:
+            text = " ".join(markdown)
+        inp = tokenizer.encode_plus(
+            text,
+            None,
+            add_special_tokens=True,
+            max_length=max_seq_len,
+            pad_to_max_length=True,
+            return_token_type_ids=True,
+            truncation=True,
+            return_tensors="pt"
+        )
+        last_hidden_state = torch.mean(model.encoder(input_ids=inp["input_ids"].to(device),
+                                                     attention_mask=inp["attention_mask"].to(device)
+                                    ).last_hidden_state, dim=1)
+        embeddings.append(last_hidden_state.squeeze(0).cpu().numpy())
+        ids.append(row["id"])
 
-    new_data = pd.DataFrame({"text_markdown": texts, "embedding": embeddings, "wilson_score": scores})
-    new_data.to_parquet(Path(output_dir) / model_path / Path(dataset_dir).name)
+    new_data = pd.DataFrame({"id": ids, "embedding": embeddings})
+    new_data.to_parquet(Path(output_dir) / model_path / (tag + Path(dataset_dir).name))
 
 if __name__ == "__main__":
     main()
