@@ -1,4 +1,4 @@
-python3 pytorch_models/train_rating.py \
+python3 pytorch_rating_models/train_rating.py \
     experiment=rate_prediction \
     trainer.max_epochs=10 \
     model.net.dropout_rate=0.5 \

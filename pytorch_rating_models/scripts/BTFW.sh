@@ -1,4 +1,4 @@
-python3 pytorch_models/train_rating.py \
+python3 pytorch_rating_models/train_rating.py \
     experiment=rate_prediction \
     trainer.max_epochs=10 \
     model.net.dropout_rate=0.5 \
@@ -6,11 +6,12 @@ python3 pytorch_models/train_rating.py \
     logger=csv \
     model.optimizer.lr=3e-5 \
     model.optimizer.weight_decay=0.0005 \
-    task_name=raw-target-tuned-title \
-    data.target=raw data.use_scaler=True \
-    model.net.use_sigmoid=False \
-    model.net.output_size=2 \
-    data.prepend_title=True \
+    task_name=wilson-target-tuned-notitle \
+    data.target=wilson \
+    data.use_scaler=False \
+    model.net.use_sigmoid=True \
+    model.net.output_size=1 \
+    data.prepend_title=False \
     data.max_seq_len=512 \
     data.batch_size=8 \
     model.net.freeze=False \

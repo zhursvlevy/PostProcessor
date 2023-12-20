@@ -1,4 +1,4 @@
-_target_: pytorch_models.models.rate_module.RateModule
+_target_: pytorch_rating_models.models.rate_module.RateModule
 
 optimizer:
   _target_: torch.optim.AdamW
@@ -14,7 +14,7 @@ scheduler:
   patience: 10
 
 net:
-  _target_: pytorch_models.models.components.transformer.RegressionTransformer
+  _target_: pytorch_rating_models.models.components.transformer.RegressionTransformer
   model_path: cointegrated/rubert-tiny2
   input_dim: 312 # depends on encoder output dim, 768 for bert-base
   hidden_dim: 64
