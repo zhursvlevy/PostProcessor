@@ -62,3 +62,25 @@ We provide main results in table below. Best models is based on ruBERT embedding
 5. BR = end-to-end trained feed-forward regression network with freezed pretraied **B**ERT backbone with Stantartized pluses and minuses.
 
 ## Tags prediction
+
+We provide all results of tags prediciton task in tables down below. The tables indicate the values of the $recall@k$ metric.  
+In first table you can find out results of implementing latent Dirichlet allocation for tags prediction.
+
+| W-OT | WT | Manual |
+| ------ |-----| ------|
+| 0.0280 | 0.0268 | 0.1446 |
+
+1. W-OT = LDA model without any information about basic distribution of tags over dataset.
+2. WT = LDA model with information about distribution of tags as a-priori distribution.
+3. Manual = WT model, but tags are manually mapped to topics, instead of simple instead of matching across distributions.
+
+At second table we present results of solving tags prediction task as classical classification task. 
+
+|     Model \ Embeddings    |       BoW   |  TF-IDF  | NGTF-IDF | RB | W2V |
+| ------------- | ------------- | ------------- | ------------- | ------------- |------------- |
+| LogReg  | 0.3041 | 0.2968 | 0.2909 | 0.2750 | - |
+|    XGB | 0.3653 | 0.3649 |0.4063| 0.2561 | - |
+|    SVM  | 0.3080 | 0.2990 | - | 0.1625 | - |
+|    LSTM  | - | 0.4584 | - | - | 0.5211 |
+
+More detailed information about results and training process you can find out at docs/paper.pdf.
