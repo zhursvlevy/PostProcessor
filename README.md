@@ -1,5 +1,5 @@
 # PostProcessor
-A service for prediction rating and tags of posts on social networks. We trained multiple ML models such as Gradient boosting, LDA, BERT on pytorch frame work, we investigated target metrics (see docs/paper.pdf) on different text embedding models and provide main results on these tasks and source code for result reproducing. We got 0.2584 on $R^2$ at rating prediction task and 0.5211 on Recall@10 at tags prediction task. 
+A service for prediction rating and tags of posts on social networks. We trained multiple ML models such as Gradient boosting, LDA, BERT on pytorch frame work, we investigated target metrics (see docs/paper.pdf) on different text embedding  models and provide main [results](#main-results) on these tasks and source code for result reproducing. We got 0.2584 on $R^2$ at rating prediction task and 0.5211 on Recall@10 at tags prediction task. 
 
 ## Project structure
 - data is dummy directories for research purpose (model weights saving, data storing)

@@ -2,11 +2,15 @@
 numpy
 matplotlib
 pandas
+seaborn
+
 
 #frameworks
 torch
 lightning
 transformers
+catboost
+scikit-learng
 
 # text processing
 nltk==3.8.1
